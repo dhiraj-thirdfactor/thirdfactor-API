@@ -1,13 +1,16 @@
 API Endpoints
 =============
 
-This guide details the available endpoints in the ThirdFactor AI API Gateway v0.1.0. 
+This guide details the available endpoints in the ThirdFactor AI API Gateway v0.1.0.
 
 All endpoints, unless otherwise stated, require an **Authorization** header with a valid Bearer token.
 
 .. code-block:: http
 
     Authorization: Bearer <YOUR_ACCESS_TOKEN>
+
+**Note regarding Image Inputs:**
+All endpoints that accept image data (detect face, compare face, etc.) require the images to be uploaded in **Base64** format. This design ensures consistent handling of image data across various client platforms and network environments, simplifying the JSON payload structure.
 
 ---
 
@@ -37,7 +40,31 @@ Verifies that the API service is operational.
       "service": "thirdfactor-ai-gateway"
     }
 
-2. Detect Face
+2. Image to Base64
+------------------
+
+A utility endpoint to convert an uploaded image file into a base64 string. Use this if your client application needs to convert files before sending them to the analysis endpoints.
+
+*   **Method:** ``POST``
+*   **Endpoint:** ``<base_url>/image-to-base64/``
+
+**Body Parameters (form-data)**
+
++---------+------+--------------+---------------------------+
+| Key     | Type | Content-Type | Description               |
++=========+======+==============+===========================+
+| ``image``| File | ``image/jpeg``| The image file to convert.|
++---------+------+--------------+---------------------------+
+
+**Response (200 OK)**
+
+.. code-block:: json
+
+    {
+      "base64_image": "data:image/jpeg;base64,/9j/4AAQS..."
+    }
+
+3. Detect Face
 --------------
 
 Analyzes a base64-encoded image to detect faces and extract specified attributes.
@@ -73,7 +100,7 @@ Analyzes a base64-encoded image to detect faces and extract specified attributes
       ]
     }
 
-3. Compare Face
+4. Compare Face
 ---------------
 
 Performs a 1:1 comparison between two face images to verify identity.
@@ -111,7 +138,7 @@ Performs a 1:1 comparison between two face images to verify identity.
       "percentage_match": 99.9
     }
 
-4. Detect & Crop Document Type
+5. Detect & Crop Document Type
 ------------------------------
 
 Identifies the type of document (e.g., national-id, passport) and returns a cropped version of the image.
@@ -135,10 +162,10 @@ Identifies the type of document (e.g., national-id, passport) and returns a crop
     {
       "document_type": "national-id-front",
       "score": 0.98,
-      "cropped_image": "data:image/jpeg;base64,/9j/..."
+      "cropped_image": "data:image/jpeg;base64,/9j/4AAQS..."
     }
 
-5. Analyze Document (OCR)
+6. Analyze Document (OCR)
 -------------------------
 
 Extracts structured text information from supported document types using OCR.
@@ -171,22 +198,6 @@ Extracts structured text information from supported document types using OCR.
         "confidence": 0.97
       }
     }
-
-6. Image to Base64
-------------------
-
-A utility endpoint to convert an uploaded image file into a base64 string.
-
-*   **Method:** ``POST``
-*   **Endpoint:** ``<base_url>/image-to-base64/``
-
-**Body Parameters (form-data)**
-
-+---------+------+--------------+---------------------------+
-| Key     | Type | Content-Type | Description               |
-+=========+======+==============+===========================+
-| ``image``| File | ``image/jpeg``| The image file to convert.|
-+---------+------+--------------+---------------------------+
 
 7. Forgery Detection
 --------------------
@@ -342,26 +353,107 @@ The request requires specific payload data which should be used to generate a JW
       "error": "Insufficient credits. Available credits: 0. 1 credit is required to generate KYC URL."
     }
 
-Webhook Notification
---------------------
+Webhook Notification (Full Payload)
+-----------------------------------
 
-When the KYC process is completed, the SDK server sends a notification to the ``callback`` URL specified in the payload.
+When the KYC process is completed, the SDK server sends a notification to the ``callback`` URL specified in the payload. The payload provides a complete log of the detection and verification process.
 
-**Example Webhook Payload**
+**Example Payload Structure:**
 
 .. code-block:: json
 
     {
       "documentDetectionLog": [
         {
-          "created_at": "2026-01-27T10:43:26.644142+00:00",
+          "created_at": "2026-01-27 10:43:26.644142+00:00",
           "is_verified": true,
           "nationality": "nepali",
           "document_number": "11111111",
-          "photo": "data:image/jpeg;base64,/9j/4AAQS...",
-          "original_photo": "data:image/jpeg;base64,/9j/4AAQS..."
+          "photo": "<BASE64_STRING_OF_SCANNED_DOC>",
+          "original_photo": "<BASE64_STRING_OF_ORIGINAL_FRAME>",
+          "claimed_doc_type": "citizenship-back",
+          "detected_doc_type": "citizenship-back",
+          "reason": "Valid Type"
+        },
+        {
+          "created_at": "2026-01-27 10:43:27.201931+00:00",
+          "is_verified": true,
+          "nationality": "nepali",
+          "document_number": "11111111",
+          "photo": "<BASE64_STRING>",
+          "original_photo": "<BASE64_STRING>",
+          "percentage_match": 64.7401,
+          "claimed_doc_type": "citizenship-front",
+          "detected_doc_type": "citizenship-front",
+          "reason": "Valid"
         }
-      ]
+      ],
+      "documentPhoto": [
+        {
+          "created_at": "2026-01-27 10:43:26.644142+00:00",
+          "is_verified": true,
+          "nationality": "nepali",
+          "document_number": "11111111",
+          "photo": "<BASE64_STRING>",
+          "claimed_doc_type": "citizenship-back",
+          "detected_doc_type": "citizenship-back",
+          "reason": "Valid Type"
+        }
+      ],
+      "gestureDetectionLog": [
+        {
+          "created_at": "2026-01-27 10:43:10.255518+00:00",
+          "is_verified": true,
+          "challenged_gesture": "Thumb_Down",
+          "detected_gesture": "Thumb_Down",
+          "percentage_match": 80.8998,
+          "photo": "<BASE64_STRING_OF_GESTURE>",
+          "reason": "Valid",
+          "is_passive_live": true,
+          "passive_score": 99.998
+        }
+      ],
+      "faceDetectionLog": [
+        {
+          "created_at": "2026-01-27 10:42:58.538744+00:00",
+          "is_verified": false,
+          "photo": "<BASE64_STRING_OF_FACE>",
+          "age": "-1",
+          "gender": "N/A",
+          "reason": "Face Occluded or Blurry.",
+          "force_next": true
+        }
+      ],
+      "nationality": "nepali",
+      "completed_at": "2026-01-27T10:43:27.882837+00:00",
+      "bypassed": 1,
+      "document_uplaod_retries": 2,
+      "session": "F7bgp2I",
+      "faceDetectionSuccess": false,
+      "document_number": "11111111",
+      "gestureSuccess": true,
+      "gender": "N/A",
+      "documentDetectionSuccess": true,
+      "in_progress": 0,
+      "age": -1,
+      "expires_at": "2026-01-29T18:24:26.141586+00:00",
+      "userPhoto": "<BASE64_STRING_OF_USER>",
+      "gesture_photo": "<BASE64_STRING>",
+      "gesture_challenge": [
+        "Thumb_Down"
+      ],
+      "percentage_match": 64.7401,
+      "face_detection_retries": 1,
+      "allow_force_next": 1,
+      "started_at": "2026-01-27T10:42:46.141586+00:00",
+      "gesture_verification_retries": 1,
+      "label": "Jane User",
+      "secondary_label": "jane",
+      "identifier": "1715",
+      "jwt": "<JWT_TOKEN>",
+      "is_verified": true,
+      "forced_next": false,
+      "signature": "<SIGNATURE>"
     }
 
-*   **Note:** The ``photo`` and ``original_photo`` fields contain the full **Base64** string of the respective images.
+*   **Note:** The ``photo``, ``original_photo``, ``userPhoto``, and ``gesture_photo`` fields contain the full **Base64** string of the respective images.
