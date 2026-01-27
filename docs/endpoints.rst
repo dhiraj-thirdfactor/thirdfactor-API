@@ -1,12 +1,20 @@
 API Endpoints
 =============
 
-This guide details the available endpoints in the ThirdFactor AI API Gateway v0.1.0.
+This guide details the available endpoints in the ThirdFactor AI API Gateway v0.1.0. 
+
+All endpoints, unless otherwise stated, require an **Authorization** header with a valid Bearer token.
+
+.. code-block:: http
+
+    Authorization: Bearer <YOUR_ACCESS_TOKEN>
+
+---
 
 1. Health Check
 ---------------
 
-Verifies that the API service is up and running.
+Verifies that the API service is operational.
 
 *   **Method:** ``GET``
 *   **Endpoint:** ``/health``
@@ -32,7 +40,7 @@ Verifies that the API service is up and running.
 2. Detect Face
 --------------
 
-Detects faces in a given base64-encoded image and extracts optional attributes.
+Analyzes a base64-encoded image to detect faces and extract specified attributes.
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``/detect-face/``
@@ -44,11 +52,11 @@ Detects faces in a given base64-encoded image and extracts optional attributes.
 | Key              | Type | Default    | Description                                                 |
 +==================+======+============+=============================================================+
 | ``base64_image`` | Text | *Required* | The base64 encoded string of the image containing the face. |
-| ``features``     | Text | ``ALL``    | Comma-separated list: ALL, AGE_RANGE, EYEGLASSES, GENDER,   |
-|                  |      |            | FACE_OCCLUDED, SUNGLASSES.                                  |
+| ``features``     | Text | ``ALL``    | Comma-separated list: ``ALL``, ``AGE_RANGE``, ``EYEGLASSES``, |
+|                  |      |            | ``GENDER``, ``FACE_OCCLUDED``, ``SUNGLASSES``.                |
 +------------------+------+------------+-------------------------------------------------------------+
 
-**Response (200 OK - Example)**
+**Response (200 OK)**
 
 .. code-block:: json
 
@@ -65,16 +73,10 @@ Detects faces in a given base64-encoded image and extracts optional attributes.
       ]
     }
 
-**Response (No Faces Found)**
-
-.. code-block:: json
-
-    { "result": false, "total_faces": 0, "faces": [] }
-
 3. Compare Face
 ---------------
 
-Compares two face images to verify if they belong to the same person.
+Performs a 1:1 comparison between two face images to verify identity.
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``/compare-face/``
@@ -82,13 +84,13 @@ Compares two face images to verify if they belong to the same person.
 
 **Query Parameters**
 
-+---------------------+----------+---------------------------------------+
-| Key                 | Value    | Description                           |
-+=====================+==========+=======================================+
-| ``threshold``       | ``52.0`` | Similarity threshold for matching.    |
-| ``live_check``      | ``false``| Enable liveness checking (true/false).|
++---------------------+----------+----------------------------------------+
+| Key                 | Value    | Description                            |
++=====================+==========+========================================+
+| ``threshold``       | ``52.0`` | Similarity threshold for matching.     |
+| ``live_check``      | ``false``| Enable liveness checking (true/false). |
 | ``occlusion_check`` | ``false``| Enable occlusion checking (true/false).|
-+---------------------+----------+---------------------------------------+
++---------------------+----------+----------------------------------------+
 
 **Body (JSON Array)**
 
@@ -109,19 +111,10 @@ Compares two face images to verify if they belong to the same person.
       "percentage_match": 99.9
     }
 
-**Response (No Match)**
-
-.. code-block:: json
-
-    {
-      "verified": false,
-      "percentage_match": 0
-    }
-
 4. Detect & Crop Document Type
 ------------------------------
 
-Automatically detects the type of document (e.g., national-id, passport, driving-license) and returns a cropped image.
+Identifies the type of document (e.g., national-id, passport) and returns a cropped version of the image.
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``/type-of-document-crop/``
@@ -148,7 +141,7 @@ Automatically detects the type of document (e.g., national-id, passport, driving
 5. Analyze Document (OCR)
 -------------------------
 
-Performs OCR and structured information extraction from supported document types.
+Extracts structured text information from supported document types using OCR.
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``/document-extract-information/``
@@ -182,11 +175,10 @@ Performs OCR and structured information extraction from supported document types
 6. Image to Base64
 ------------------
 
-Utility endpoint to convert an uploaded image file to a base64 string.
+A utility endpoint to convert an uploaded image file into a base64 string.
 
 *   **Method:** ``POST``
-*   **Endpoint:** ``https://ep-sa1.thirdfactor.ai/image-to-base64/``
-*   **Note:** This endpoint has a specific host URL.
+*   **Endpoint:** ``<base_url>/image-to-base64/``
 
 **Body Parameters (form-data)**
 
@@ -196,12 +188,106 @@ Utility endpoint to convert an uploaded image file to a base64 string.
 | ``image``| File | ``image/jpeg``| The image file to convert.|
 +---------+------+--------------+---------------------------+
 
+7. Forgery Detection
+--------------------
+
+Analyzes an image to detect potential manipulation or forgery.
+
+*   **Method:** ``POST``
+*   **Endpoint:** ``/api/analyze``
+*   **Content-Type:** ``multipart/form-data``
+
+**Body Parameters (form-data)**
+
++---------+------+--------------+---------------------------+
+| Key     | Type | Content-Type | Description               |
++=========+======+==============+===========================+
+| ``image``| File | ``image/png`` | The image file to analyze.|
++---------+------+--------------+---------------------------+
+
 **Response (200 OK)**
 
 .. code-block:: json
 
-7. Generate KYC URL (SDK)
--------------------------
+    {
+        "is_forged": false,
+        "original_image": "/static/uploads/original_ID.png",
+        "highlighted_image": "/static/uploads/overlay_ID.png",
+        "analysis": {
+            "status": "AUTHENTIC",
+            "forgery_score": "0.13",
+            "details": "No manipulation detected"
+        }
+    }
+
+8. 1:N Reverse Face Search
+--------------------------
+
+Performs a reverse search to find a face match within a pre-ingested database.
+
+*   **Method:** ``POST``
+*   **Endpoint:** ``/api/face-reverse-search``
+*   **Content-Type:** ``binary``
+
+**Body**
+
+*   **Binary File:** Upload the image file as the raw body content.
+
+**Response (200 OK)**
+
+.. code-block:: json
+
+    {
+        "matches": [
+            {
+                "id": 6,
+                "score": 0.0,
+                "metadata": {
+                    "filename": "ingest_1764663714_user.jpg"
+                }
+            },
+            {
+                "id": 25,
+                "score": 0.32,
+                "metadata": {
+                    "filename": "ingest_1768883379_FRONT.jpg"
+                }
+            }
+        ],
+        "query_time_seconds": 1.38,
+        "search_time_seconds": 0.00007,
+        "query_image": "/static/uploads/query_1769539703.jpg",
+        "total_time_seconds": 1.39
+    }
+
+9. Batch Ingest (1:N Search)
+----------------------------
+
+Ingests an image into the database for future 1:N reverse face searches.
+
+*   **Method:** ``POST``
+*   **Endpoint:** ``/batch_ingest``
+*   **Content-Type:** ``binary``
+
+**Body**
+
+*   **Binary File:** Upload the image file as the raw body content.
+
+**Response (200 OK)**
+
+.. code-block:: json
+
+    {
+        "results": [
+            {
+                "filename": "test.jpeg",
+                "id": 35
+            }
+        ]
+    }
+
+10. Generate KYC URL (SDK)
+--------------------------
 
 Generates a dynamic URL for the ThirdFactor SDK authentication process.
 
@@ -219,28 +305,24 @@ The request requires specific payload data which should be used to generate a JW
 
     {
       "sub": "1234567890",
-      "name": "Dhiraj Chapagain",
-      "iss": "IZ8371QZ40",
-      "token": "3IRY66384N",
+      "name": "Jane User",
+      "iss": "<YOUR_ISSUER_ID>",
+      "token": "<YOUR_TOKEN>",
       "iat": 1516239022,
       "identifier": "9888888888",
-      "label": "Dhiraj Chapagain",
-      "secondary_label": "dhiraj",
-      "callback": "https://yourwebhook.comma/281f1268-6f8b-4cf9-903d-d8ab3ab9618a"
+      "label": "Jane User",
+      "secondary_label": "jane",
+      "callback": "https://your-webhook.com/callback-id"
     }
 
 *   ``callback``: The URL where the results of KYC Verification will be sent.
-
-**JWT Generation:**
-
-Use the payload data above and your secret to generate a JWT. You can test decoding at `jwt.io <https://jwt.io/>`_.
 
 **Response (200 OK)**
 
 .. code-block:: json
 
     {
-      "url": "https://endpoint/tfauth/start?token=...",
+      "url": "https://<endpoint>/tfauth/start?token=...",
       "remaining_credits": 96
     }
 
@@ -249,7 +331,7 @@ Use the payload data above and your secret to generate a JWT. You can test decod
 .. code-block:: json
 
     {
-      "error": "Invalid token or token does not belong to tenant: Org Name"
+      "error": "Invalid token or token does not belong to tenant: <Org Name>"
     }
 
 **Response (Error - Insufficient Credits)**
@@ -272,11 +354,14 @@ When the KYC process is completed, the SDK server sends a notification to the ``
     {
       "documentDetectionLog": [
         {
-          "created_at": "2026-01-27 10:43:26.644142+00:00",
+          "created_at": "2026-01-27T10:43:26.644142+00:00",
           "is_verified": true,
           "nationality": "nepali",
           "document_number": "11111111",
-          "photo": "data:image/jpeg;base64,/9j/4AAQS..."
+          "photo": "data:image/jpeg;base64,/9j/4AAQS...",
+          "original_photo": "data:image/jpeg;base64,/9j/4AAQS..."
         }
       ]
     }
+
+*   **Note:** The ``photo`` and ``original_photo`` fields contain the full **Base64** string of the respective images.
