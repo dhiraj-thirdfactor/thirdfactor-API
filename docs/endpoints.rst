@@ -165,7 +165,7 @@ Identifies the type of document (e.g., national-id, passport) and returns a crop
       "cropped_image": "data:image/jpeg;base64,/9j/4AAQS..."
     }
 
-6. Analyze Document (OCR)
+6. Detect & OCR Document
 -------------------------
 
 Extracts structured text information from supported document types using OCR.
@@ -199,7 +199,7 @@ Extracts structured text information from supported document types using OCR.
       }
     }
 
-7. Forgery Detection
+7. Detect Forgery
 --------------------
 
 Analyzes an image to detect potential manipulation or forgery.
@@ -231,7 +231,7 @@ Analyzes an image to detect potential manipulation or forgery.
         }
     }
 
-8. 1:N Reverse Face Search
+8. Compare Face (1:N) Reverse Face Search
 --------------------------
 
 Performs a reverse search to find a face match within a pre-ingested database.
@@ -271,7 +271,7 @@ Performs a reverse search to find a face match within a pre-ingested database.
         "total_time_seconds": 1.39
     }
 
-9. Batch Ingest (1:N Search)
+9. Ingest Face (1:N Search)
 ----------------------------
 
 Ingests an image into the database for future 1:N reverse face searches.
