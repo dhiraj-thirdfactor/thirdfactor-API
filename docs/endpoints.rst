@@ -100,7 +100,44 @@ Analyzes a base64-encoded image to detect faces and extract specified attributes
       ]
     }
 
-4. Compare Face (1:1)
+4. Analyze Liveness
+-------------------
+
+Analyzes a video file to verify liveness and detecting potential spoofing attempts.
+
+*   **Method:** ``POST``
+*   **Endpoint:** ``/api/analyze-liveness``
+*   **Content-Type:** ``multipart/form-data``
+
+**Body Parameters (form-data)**
+
++---------+------+--------------+---------------------------+
+| Key     | Type | Content-Type | Description               |
++=========+======+==============+===========================+
+| ``video``| File | ``item/binary``| The video file to analyze.|
++---------+------+--------------+---------------------------+
+
+**Response (200 OK)**
+
+.. code-block:: json
+
+    {
+      "analysis": {
+        "liveness_score": "0.70",
+        "antispoof_score": "1.00",
+        "blink_count": 0
+      },
+      "antispoof_score": "1.00",
+      "blink_count": 0,
+      "liveness_score": "0.70",
+      "frames": [
+        "data:image/jpeg;base64,/9j/4AAQ...",
+        "data:image/jpeg;base64,/9j/4AAQ..."
+      ],
+      "is_live": true
+    }
+
+5. Compare Face (1:1)
 ---------------------
 
 Performs a 1:1 comparison between two face images to verify identity.
@@ -138,7 +175,7 @@ Performs a 1:1 comparison between two face images to verify identity.
       "percentage_match": 99.9
     }
 
-5. Compare Face (1:N)
+6. Compare Face (1:N)
 ---------------------
 
 Performs a reverse search to find a face match within a pre-ingested database.
@@ -178,7 +215,7 @@ Performs a reverse search to find a face match within a pre-ingested database.
         "total_time_seconds": 1.39
     }
 
-6. Ingest Face (1:N Search)
+7. Ingest Face (1:N Search)
 ---------------------------
 
 Ingests an image into the database for future 1:N reverse face searches.
@@ -204,8 +241,8 @@ Ingests an image into the database for future 1:N reverse face searches.
         ]
     }
 
-7. Detect & Crop Document
-------------------------------
+8. Detect & Crop Document
+-------------------------
 
 Identifies the type of document (e.g., national-id, passport) and returns a cropped version of the image.
 
@@ -231,7 +268,7 @@ Identifies the type of document (e.g., national-id, passport) and returns a crop
       "cropped_image": "data:image/jpeg;base64,/9j/4AAQS..."
     }
 
-8. Detect & OCR Document
+9. Detect & OCR Document
 ------------------------
 
 Extracts structured text information from supported document types using OCR.
@@ -244,7 +281,7 @@ Extracts structured text information from supported document types using OCR.
 
 +------------------+------+---------------------------------------+
 | Key              | Type | Description                           |
-+==================+======+=======================================+
++==================+======+================================-------+
 | ``base64_image`` | Text | Base64 encoded string of the document.|
 +------------------+------+---------------------------------------+
 
@@ -265,8 +302,8 @@ Extracts structured text information from supported document types using OCR.
       }
     }
 
-9. Detect Forgery
------------------
+10. Detect Forgery
+------------------
 
 Analyzes an image to detect potential manipulation or forgery.
 
@@ -297,7 +334,7 @@ Analyzes an image to detect potential manipulation or forgery.
         }
     }
 
-10. Generate KYC URL (SDK)
+11. Generate KYC URL (SDK)
 --------------------------
 
 Generates a dynamic URL for the ThirdFactor SDK authentication process.
