@@ -131,8 +131,8 @@ Analyzes a video file to verify liveness and detecting potential spoofing attemp
       "blink_count": 0,
       "liveness_score": "0.70",
       "frames": [
-        "data:image/jpeg;base64,/9j/4AAQ...",
-        "data:image/jpeg;base64,/9j/4AAQ..."
+        0: "data:image/jpeg;base64,/9j/4AAQ...",
+        1:"data:image/jpeg;base64,/9j/4AAQ..."
       ],
       "is_live": true
     }
