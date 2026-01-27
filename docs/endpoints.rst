@@ -10,6 +10,7 @@ Verifies that the API service is up and running.
 
 *   **Method:** ``GET``
 *   **Endpoint:** ``/health``
+*   **Auth:** Not required
 
 **Headers**
 
@@ -19,121 +20,114 @@ Verifies that the API service is up and running.
 | ``Accept``  | ``application/json``|
 +-------------+--------------------+
 
-**Example Request**
+**Response (200 OK)**
 
-.. code-block:: http
+.. code-block:: json
 
-    GET /health HTTP/1.1
-    Host: <base_url>
-    Authorization: Bearer <token>
-    Accept: application/json
-
+    {
+      "status": "healthy",
+      "service": "thirdfactor-ai-gateway"
+    }
 
 2. Detect Face
 --------------
 
-Detects faces in a given base64-encoded image.
+Detects faces in a given base64-encoded image and extracts optional attributes.
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``/detect-face/``
+*   **Content-Type:** ``application/x-www-form-urlencoded``
 
-**Headers**
+**Body Parameters**
 
-+----------------+-------------------------------------+
-| Key            | Value                               |
-+================+=====================================+
-| ``Content-Type``| ``application/x-www-form-urlencoded``|
-+----------------+-------------------------------------+
++------------------+------+------------+-------------------------------------------------------------+
+| Key              | Type | Default    | Description                                                 |
++==================+======+============+=============================================================+
+| ``base64_image`` | Text | *Required* | The base64 encoded string of the image containing the face. |
+| ``features``     | Text | ``ALL``    | Comma-separated list: ALL, AGE_RANGE, EYEGLASSES, GENDER,   |
+|                  |      |            | FACE_OCCLUDED, SUNGLASSES.                                  |
++------------------+------+------------+-------------------------------------------------------------+
 
-**Body Parameters (x-www-form-urlencoded)**
+**Response (200 OK - Example)**
 
-+------------------+------+------------+-----------------------------------------------------------+
-| Key              | Type | Default    | Description                                               |
-+==================+======+============+===========================================================+
-| ``base64_image`` | Text | *Required* | The base64 encoded string of the image containing the face.|
-| ``features``     | Text | ``ALL``    | Specify features to extract.                              |
-+------------------+------+------------+-----------------------------------------------------------+
+.. code-block:: json
 
-**Example Request**
+    {
+      "result": true,
+      "total_faces": 1,
+      "faces": [
+        {
+          "confidence": 0.84,
+          "age_range": { "min_age": 27, "max_age": 32, "detected_age": 29 },
+          "gender": "Male",
+          "occluded": false
+        }
+      ]
+    }
 
-.. code-block:: bash
+**Response (No Faces Found)**
 
-    curl --location '<base_url>/detect-face/' \
-    --header 'Content-Type: application/x-www-form-urlencoded' \
-    --header 'Authorization: Bearer <token>' \
-    --data-urlencode 'base64_image=<BASE64_STRING>' \
-    --data-urlencode 'features=ALL'
+.. code-block:: json
 
+    { "result": false, "total_faces": 0, "faces": [] }
 
 3. Compare Face
 ---------------
 
-Compares two face images to check for a match.
+Compares two face images to verify if they belong to the same person.
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``/compare-face/``
+*   **Content-Type:** ``application/json``
 
 **Query Parameters**
 
 +---------------------+----------+---------------------------------------+
 | Key                 | Value    | Description                           |
 +=====================+==========+=======================================+
-| ``threshold``       | ``52``   | Similarity threshold for matching.    |
+| ``threshold``       | ``52.0`` | Similarity threshold for matching.    |
 | ``live_check``      | ``false``| Enable liveness checking (true/false).|
 | ``occlusion_check`` | ``false``| Enable occlusion checking (true/false).|
 +---------------------+----------+---------------------------------------+
 
-**Headers**
-
-+----------------+--------------------+
-| Key            | Value              |
-+================+====================+
-| ``Content-Type``| ``application/json``|
-+----------------+--------------------+
-
-**Body (raw JSON)**
-
-Array containing two base64 strings.
+**Body (JSON Array)**
 
 .. code-block:: json
 
     [
-      "BASE64_IMAGE_STRING_1",
-      "BASE64_IMAGE_STRING_2"
+      "<BASE64_IMAGE_1>",
+      "<BASE64_IMAGE_2>"
     ]
 
-**Example Request**
+**Response (200 OK - Match)**
 
-.. code-block:: bash
+.. code-block:: json
 
-    curl --location '<base_url>/compare-face/?threshold=52&live_check=false&occlusion_check=false' \
-    --header 'Content-Type: application/json' \
-    --header 'Authorization: Bearer <token>' \
-    --data '[
-        "BASE64_IMAGE_1",
-        "BASE64_IMAGE_2"
-    ]'
+    {
+      "verified": true,
+      "confidence": 98.5,
+      "percentage_match": 99.9
+    }
 
+**Response (No Match)**
 
-4. Document Crop (Get Document Type)
-------------------------------------
+.. code-block:: json
 
-Analyzes a document image and determines cropping or document type details.
+    {
+      "verified": false,
+      "percentage_match": 0
+    }
+
+4. Detect & Crop Document Type
+------------------------------
+
+Automatically detects the type of document (e.g., national-id, passport, driving-license) and returns a cropped image.
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``/type-of-document-crop/``
+*   **Content-Type:** ``application/json``
 
-**Headers**
-
-+----------------+--------------------+
-| Key            | Value              |
-+================+====================+
-| ``Content-Type``| ``application/json``|
-+----------------+--------------------+
-
-**Body Parameters (x-www-form-urlencoded)**
-
-*Note: The Postman collection indicates urlencoded body mode, though Content-Type header suggests JSON. Please verify the backend expectation.*
+**Body Parameters**
 
 +------------------+------+---------------------------------------------+
 | Key              | Type | Description                                 |
@@ -141,33 +135,26 @@ Analyzes a document image and determines cropping or document type details.
 | ``base64_image`` | Text | Base64 encoded string of the document image.|
 +------------------+------+---------------------------------------------+
 
-**Example Request**
+**Response (200 OK)**
 
-.. code-block:: bash
+.. code-block:: json
 
-    curl --location '<base_url>/type-of-document-crop/' \
-    --header 'Content-Type: application/json' \
-    --header 'Authorization: Bearer <token>' \
-    --data-urlencode 'base64_image=<BASE64_STRING>'
+    {
+      "document_type": "national-id-front",
+      "score": 0.98,
+      "cropped_image": "data:image/jpeg;base64,/9j/..."
+    }
 
+5. Analyze Document (OCR)
+-------------------------
 
-5. OCR Document
----------------
-
-Extracts text information from a document image.
+Performs OCR and structured information extraction from supported document types.
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``/document-extract-information/``
+*   **Content-Type:** ``application/x-www-form-urlencoded``
 
-**Headers**
-
-+----------------+-------------------------------------+
-| Key            | Value                               |
-+================+=====================================+
-| ``Content-Type``| ``application/x-www-form-urlencoded``|
-+----------------+-------------------------------------+
-
-**Body Parameters (x-www-form-urlencoded)**
+**Body Parameters**
 
 +------------------+------+---------------------------------------+
 | Key              | Type | Description                           |
@@ -175,15 +162,22 @@ Extracts text information from a document image.
 | ``base64_image`` | Text | Base64 encoded string of the document.|
 +------------------+------+---------------------------------------+
 
-**Example Request**
+**Response (200 OK)**
 
-.. code-block:: bash
+.. code-block:: json
 
-    curl --location '<base_url>/document-extract-information/' \
-    --header 'Content-Type: application/x-www-form-urlencoded' \
-    --header 'Authorization: Bearer <token>' \
-    --data-urlencode 'base64_image=<BASE64_STRING>'
-
+    {
+      "success": true,
+      "data": {
+        "id_number": "XXXX-XXXX-XXXX",
+        "name": "Jane Smith",
+        "address": "Sample Address",
+        "gender": "F",
+        "dob": { "year": "1995", "month": "07", "day": "10" },
+        "detected_type": "national-id",
+        "confidence": 0.97
+      }
+    }
 
 6. Image to Base64
 ------------------
@@ -192,7 +186,7 @@ Utility endpoint to convert an uploaded image file to a base64 string.
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``https://ep-sa1.thirdfactor.ai/image-to-base64/``
-*   **Note:** This endpoint has a specific host different from the base URL.
+*   **Note:** This endpoint has a specific host URL.
 
 **Body Parameters (form-data)**
 
@@ -202,10 +196,87 @@ Utility endpoint to convert an uploaded image file to a base64 string.
 | ``image``| File | ``image/jpeg``| The image file to convert.|
 +---------+------+--------------+---------------------------+
 
-**Example Request**
+**Response (200 OK)**
 
-.. code-block:: bash
+.. code-block:: json
 
-    curl --location 'https://ep-sa1.thirdfactor.ai/image-to-base64/' \
-    --header 'Authorization: Bearer <token>' \
-    --form 'image=@"/path/to/file.jpg"'
+7. Generate KYC URL (SDK)
+-------------------------
+
+Generates a dynamic URL for the ThirdFactor SDK authentication process.
+
+*   **Method:** ``POST``
+*   **Endpoint:** ``/tfauth/get-kyc-url/``
+*   **Auth:** Requires a self-signed JWT token in the body (or authorization header, implementation dependent).
+
+**Request Body (JSON)**
+
+The request requires specific payload data which should be used to generate a JWT token signed with your **JWT Token Secret**.
+
+**Payload Data Sample:**
+
+.. code-block:: json
+
+    {
+      "sub": "1234567890",
+      "name": "Dhiraj Chapagain",
+      "iss": "IZ8371QZ40",
+      "token": "3IRY66384N",
+      "iat": 1516239022,
+      "identifier": "9888888888",
+      "label": "Dhiraj Chapagain",
+      "secondary_label": "dhiraj",
+      "callback": "https://yourwebhook.comma/281f1268-6f8b-4cf9-903d-d8ab3ab9618a"
+    }
+
+*   ``callback``: The URL where the results of KYC Verification will be sent.
+
+**JWT Generation:**
+
+Use the payload data above and your secret to generate a JWT. You can test decoding at `jwt.io <https://jwt.io/>`_.
+
+**Response (200 OK)**
+
+.. code-block:: json
+
+    {
+      "url": "https://endpoint/tfauth/start?token=...",
+      "remaining_credits": 96
+    }
+
+**Response (Error - Invalid Token)**
+
+.. code-block:: json
+
+    {
+      "error": "Invalid token or token does not belong to tenant: Org Name"
+    }
+
+**Response (Error - Insufficient Credits)**
+
+.. code-block:: json
+
+    {
+      "error": "Insufficient credits. Available credits: 0. 1 credit is required to generate KYC URL."
+    }
+
+Webhook Notification
+--------------------
+
+When the KYC process is completed, the SDK server sends a notification to the ``callback`` URL specified in the payload.
+
+**Example Webhook Payload**
+
+.. code-block:: json
+
+    {
+      "documentDetectionLog": [
+        {
+          "created_at": "2026-01-27 10:43:26.644142+00:00",
+          "is_verified": true,
+          "nationality": "nepali",
+          "document_number": "11111111",
+          "photo": "data:image/jpeg;base64,/9j/4AAQS..."
+        }
+      ]
+    }

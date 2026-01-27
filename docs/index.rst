@@ -37,6 +37,35 @@ The API uses **HTTP Bearer Token** authentication. All requests must include the
 
     Authorization: Bearer <YOUR_ACCESS_TOKEN>
 
+Response Status Codes
+---------------------
+
+The API uses standard HTTP status codes to indicate the success or failure of a request.
+
+*   **200 OK**: Request was successful.
+*   **422 Unprocessable Entity**: Validation failed (e.g., missing fields, invalid format).
+*   **401 Unauthorized**: Authentication failed or invalid token.
+*   **500 Internal Server Error**: An unexpected error occurred on the server.
+
+Error Model
+-----------
+
+When a request fails validation (HTTP 422), the API returns a structured JSON response detailing the error.
+
+**Sample Validation Error:**
+
+.. code-block:: json
+
+    {
+      "detail": [
+        {
+          "loc": ["body", "field_name"],
+          "msg": "Field is required",
+          "type": "value_error.missing"
+        }
+      ]
+    }
+
 Version History
 ---------------
 
@@ -54,4 +83,3 @@ Contents
    :maxdepth: 2
 
    endpoints
-   security
