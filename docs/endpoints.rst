@@ -100,8 +100,8 @@ Analyzes a base64-encoded image to detect faces and extract specified attributes
       ]
     }
 
-4. Compare Face
----------------
+4. Compare Face (1:1)
+---------------------
 
 Performs a 1:1 comparison between two face images to verify identity.
 
@@ -138,101 +138,8 @@ Performs a 1:1 comparison between two face images to verify identity.
       "percentage_match": 99.9
     }
 
-5. Detect & Crop Document Type
-------------------------------
-
-Identifies the type of document (e.g., national-id, passport) and returns a cropped version of the image.
-
-*   **Method:** ``POST``
-*   **Endpoint:** ``/type-of-document-crop/``
-*   **Content-Type:** ``application/json``
-
-**Body Parameters**
-
-+------------------+------+---------------------------------------------+
-| Key              | Type | Description                                 |
-+==================+======+=============================================+
-| ``base64_image`` | Text | Base64 encoded string of the document image.|
-+------------------+------+---------------------------------------------+
-
-**Response (200 OK)**
-
-.. code-block:: json
-
-    {
-      "document_type": "national-id-front",
-      "score": 0.98,
-      "cropped_image": "data:image/jpeg;base64,/9j/4AAQS..."
-    }
-
-6. Detect & OCR Document
--------------------------
-
-Extracts structured text information from supported document types using OCR.
-
-*   **Method:** ``POST``
-*   **Endpoint:** ``/document-extract-information/``
-*   **Content-Type:** ``application/x-www-form-urlencoded``
-
-**Body Parameters**
-
-+------------------+------+---------------------------------------+
-| Key              | Type | Description                           |
-+==================+======+=======================================+
-| ``base64_image`` | Text | Base64 encoded string of the document.|
-+------------------+------+---------------------------------------+
-
-**Response (200 OK)**
-
-.. code-block:: json
-
-    {
-      "success": true,
-      "data": {
-        "id_number": "XXXX-XXXX-XXXX",
-        "name": "Jane Smith",
-        "address": "Sample Address",
-        "gender": "F",
-        "dob": { "year": "1995", "month": "07", "day": "10" },
-        "detected_type": "national-id",
-        "confidence": 0.97
-      }
-    }
-
-7. Detect Forgery
---------------------
-
-Analyzes an image to detect potential manipulation or forgery.
-
-*   **Method:** ``POST``
-*   **Endpoint:** ``/api/analyze``
-*   **Content-Type:** ``multipart/form-data``
-
-**Body Parameters (form-data)**
-
-+---------+------+--------------+---------------------------+
-| Key     | Type | Content-Type | Description               |
-+=========+======+==============+===========================+
-| ``image``| File | ``image/png`` | The image file to analyze.|
-+---------+------+--------------+---------------------------+
-
-**Response (200 OK)**
-
-.. code-block:: json
-
-    {
-        "is_forged": false,
-        "original_image": "/static/uploads/original_ID.png",
-        "highlighted_image": "/static/uploads/overlay_ID.png",
-        "analysis": {
-            "status": "AUTHENTIC",
-            "forgery_score": "0.13",
-            "details": "No manipulation detected"
-        }
-    }
-
-8. Compare Face (1:N) Reverse Face Search
---------------------------
+5. Compare Face (1:N)
+---------------------
 
 Performs a reverse search to find a face match within a pre-ingested database.
 
@@ -271,8 +178,8 @@ Performs a reverse search to find a face match within a pre-ingested database.
         "total_time_seconds": 1.39
     }
 
-9. Ingest Face (1:N Search)
-----------------------------
+6. Ingest Face (1:N Search)
+---------------------------
 
 Ingests an image into the database for future 1:N reverse face searches.
 
@@ -295,6 +202,99 @@ Ingests an image into the database for future 1:N reverse face searches.
                 "id": 35
             }
         ]
+    }
+
+7. Detect & Crop Document
+------------------------------
+
+Identifies the type of document (e.g., national-id, passport) and returns a cropped version of the image.
+
+*   **Method:** ``POST``
+*   **Endpoint:** ``/type-of-document-crop/``
+*   **Content-Type:** ``application/json``
+
+**Body Parameters**
+
++------------------+------+---------------------------------------------+
+| Key              | Type | Description                                 |
++==================+======+=============================================+
+| ``base64_image`` | Text | Base64 encoded string of the document image.|
++------------------+------+---------------------------------------------+
+
+**Response (200 OK)**
+
+.. code-block:: json
+
+    {
+      "document_type": "national-id-front",
+      "score": 0.98,
+      "cropped_image": "data:image/jpeg;base64,/9j/4AAQS..."
+    }
+
+8. Detect & OCR Document
+------------------------
+
+Extracts structured text information from supported document types using OCR.
+
+*   **Method:** ``POST``
+*   **Endpoint:** ``/document-extract-information/``
+*   **Content-Type:** ``application/x-www-form-urlencoded``
+
+**Body Parameters**
+
++------------------+------+---------------------------------------+
+| Key              | Type | Description                           |
++==================+======+=======================================+
+| ``base64_image`` | Text | Base64 encoded string of the document.|
++------------------+------+---------------------------------------+
+
+**Response (200 OK)**
+
+.. code-block:: json
+
+    {
+      "success": true,
+      "data": {
+        "id_number": "XXXX-XXXX-XXXX",
+        "name": "Jane Smith",
+        "address": "Sample Address",
+        "gender": "F",
+        "dob": { "year": "1995", "month": "07", "day": "10" },
+        "detected_type": "national-id",
+        "confidence": 0.97
+      }
+    }
+
+9. Detect Forgery
+-----------------
+
+Analyzes an image to detect potential manipulation or forgery.
+
+*   **Method:** ``POST``
+*   **Endpoint:** ``/api/analyze``
+*   **Content-Type:** ``multipart/form-data``
+
+**Body Parameters (form-data)**
+
++---------+------+--------------+---------------------------+
+| Key     | Type | Content-Type | Description               |
++=========+======+==============+===========================+
+| ``image``| File | ``image/png`` | The image file to analyze.|
++---------+------+--------------+---------------------------+
+
+**Response (200 OK)**
+
+.. code-block:: json
+
+    {
+        "is_forged": false,
+        "original_image": "/static/uploads/original_ID.png",
+        "highlighted_image": "/static/uploads/overlay_ID.png",
+        "analysis": {
+            "status": "AUTHENTIC",
+            "forgery_score": "0.13",
+            "details": "No manipulation detected"
+        }
     }
 
 10. Generate KYC URL (SDK)
