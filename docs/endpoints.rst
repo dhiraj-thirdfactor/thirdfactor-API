@@ -403,7 +403,7 @@ The request requires specific payload data which should be used to generate a JW
       "error": "Insufficient credits. Available credits: 0. 1 credit is required to generate KYC URL."
     }
 
-**Webhook Notification (Full Payload)**
+**11.1 Webhook Notification (Full Payload)**
 
 When the KYC process is completed, the SDK server sends a notification to the ``callback`` URL specified in the payload. The payload provides a complete log of the detection and verification process.
 
