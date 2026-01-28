@@ -350,41 +350,62 @@ Analyzes an image to detect potential manipulation or forgery.
 11. Generate KYC URL (SDK)
 --------------------------
 
-Generates a dynamic URL for the ThirdFactor SDK authentication process.
+Generates a dynamic URL for the ThirdFactor SDK authentication process. To use this endpoint, you must first generate a signed JWT token.
+
+**1. Generate JWT Token**
+
+Create a JWT token signed with **HMAC SHA256 (HS256)** using your provided **Secret**.
+
+*   **Header:**
+
+    .. code-block:: json
+
+        {
+          "alg": "HS256",
+          "typ": "JWT"
+        }
+
+*   **Payload:**
+
+    .. code-block:: json
+
+        {
+          "sub": "1234567890",
+          "name": "Jane User",
+          "iss": "<YOUR_ISSUER_ID>",
+          "token": "<YOUR_TOKEN>",
+          "iat": 1516239022,
+          "identifier": "9888888888",
+          "label": "Jane User",
+          "secondary_label": "jane",
+          "callback": "https://your-webhook.com/callback-id"
+        }
+
+    *   ``callback``: The URL where the results of the KYC Verification will be sent via webhook.
+
+**2. Make the Request**
 
 *   **Method:** ``POST``
-*   **Endpoint:** ``/tfauth/get-kyc-url/``
-*   **Auth:** Requires a self-signed JWT token in the body (or authorization header, implementation dependent).
+*   **Request URL:** ``https://<thirdfactor_URL>/tfauth/get-kyc-url/``
+*   **Content-Type:** ``application/json``
 
-**Request Body (JSON)**
+**Request Body:**
 
-The request requires specific payload data which should be used to generate a JWT token signed with your **JWT Token Secret**.
-
-**Payload Data Sample:**
+Include the generated JWT token in the JSON body.
 
 .. code-block:: json
 
     {
-      "sub": "1234567890",
-      "name": "Jane User",
-      "iss": "<YOUR_ISSUER_ID>",
-      "token": "<YOUR_TOKEN>",
-      "iat": 1516239022,
-      "identifier": "9888888888",
-      "label": "Jane User",
-      "secondary_label": "jane",
-      "callback": "https://your-webhook.com/callback-id"
+        "jwt_token": "<YOUR_GENERATED_JWT_TOKEN>"
     }
-
-*   ``callback``: The URL where the results of KYC Verification will be sent.
 
 **Response (200 OK)**
 
 .. code-block:: json
 
     {
-      "url": "https://<endpoint>/tfauth/start?token=...",
-      "remaining_credits": 96
+        "url": "https://endpoint/tfauth/start?",
+        "remaining_credits": 97
     }
 
 **Response (Error - Invalid Token)**
