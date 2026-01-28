@@ -250,6 +250,19 @@ Identifies the type of document (e.g., national-id, passport) and returns a crop
 *   **Endpoint:** ``/type-of-document-crop/``
 *   **Content-Type:** ``application/json``
 
+**Supported Document Types:**
+
+The API recognizes specific keys for different document types.
+
+*   ``citizenship``: ['citizenship-front', 'citizenship-back']
+*   ``driving-license``: ['driving-license']
+*   ``pan-id``: ['pan-id']
+*   ``voter-id``: ['voter-id']
+*   ``disability-id``: ['disability-id']
+*   ``Passport``: ['passport-front', 'passport-back']
+*   ``national-id``: ['national-id']
+*   ``foreign-passport``: ['foreign-passport-front', 'foreign-passport-back', 'foreign-passport-residency-proof']
+
 **Body Parameters**
 
 +------------------+------+---------------------------------------------+
@@ -389,6 +402,88 @@ The request requires specific payload data which should be used to generate a JW
     {
       "error": "Insufficient credits. Available credits: 0. 1 credit is required to generate KYC URL."
     }
+
+12. KYB - Business Document Detection
+-------------------------------------
+
+Set of endpoints for detecting and validating business-related documents.
+
+**12.1 Single Inference**
+
+Detects business document class in a single uploaded image.
+
+*   **Method:** ``POST``
+*   **Endpoint:** ``/api/v1/business_doc_detection/inference/single``
+*   **Content-Type:** ``multipart/form-data``
+
+**Parameters**
+
++--------------------+----------+-------------------------------------------------+
+| Key                | Type     | Description                                     |
++====================+==========+=================================================+
+| ``file``           | File     | **Required**. The image file to analyze.        |
+| ``expected_class`` | Text     | Optional. The expected class name for validaton.|
+| ``confidence``     | Number   | Optional. Confidence threshold. Default: ``0.7``|
++--------------------+----------+-------------------------------------------------+
+
+**Response (200 OK)**
+
+.. code-block:: json
+
+    {
+      "filename": "image.jpg",
+      "predicted_class": "business_vat_pan",
+      "expected_class": "business_vat_pan",
+      "confidence": 0.95,
+      "is_correct": true,
+      "bbox": [100, 150, 400, 500],
+      "output_path": "/app/media_files/results/image.jpg"
+    }
+
+**12.2 Folder Inference**
+
+Batch processes images within a specified folder path.
+
+*   **Method:** ``POST``
+*   **Endpoint:** ``/api/v1/business_doc_detection/inference/folder``
+*   **Content-Type:** ``multipart/form-data``
+
+**Parameters**
+
++-----------------+----------+-------------------------------------------------+
+| Key             | Type     | Description                                     |
++=================+==========+=================================================+
+| ``folder_path`` | Text     | **Required**. Path to the folder containing imgs|
+| ``confidence``  | Number   | Optional. Confidence threshold. Default: ``0.7``|
++-----------------+----------+-------------------------------------------------+
+
+**Response (200 OK)**
+
+.. code-block:: json
+
+    {
+      "total_images": 10,
+      "correct_predictions": 8,
+      "incorrect_predictions": 1,
+      "no_predictions": 1,
+      "files": [
+         { "filename": "doc1.jpg", "predicted_class": "vat", "confidence": 0.98 },
+         { "filename": "doc2.jpg", "predicted_class": "pan", "confidence": 0.92 }
+      ]
+    }
+
+**12.3 Health Check (KYB)**
+
+Checks the status of the Business Document Detection service.
+
+*   **Method:** ``GET``
+*   **Endpoint:** ``/api/v1/business_doc_detection/health``
+
+**Response (200 OK)**
+
+.. code-block:: json
+
+    { "status": "Ok" }
 
 Webhook Notification (Full Payload)
 -----------------------------------
