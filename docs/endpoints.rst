@@ -3,14 +3,72 @@ API Endpoints
 
 This guide details the available endpoints in the ThirdFactor AI API Gateway v0.1.0.
 
-All endpoints, unless otherwise stated, require an **Authorization** header with a valid Bearer token.
+.. _overview:
 
-.. code-block:: http
+Overview
+--------
 
-    Authorization: Bearer <YOUR_ACCESS_TOKEN>
+ThirdFactor.ai provides AI-powered identity verification and document understanding services through this secure API gateway.
+
+**Base URL**
+   ``https://<CUSTOM_URL>`` — issued to your organisation by ThirdFactor.ai.
+
+**Authentication**
+   HTTP Bearer Token — issued to your organisation by ThirdFactor.ai.
+
+   .. code-block:: http
+
+       Authorization: Bearer <YOUR_ACCESS_TOKEN>
+
+**Content Types**
+
++------------------------------------------+------------------------------------------+
+| Content-Type                             | Used for                                 |
++==========================================+==========================================+
+| ``application/x-www-form-urlencoded``    | Most image-as-base64 inputs              |
++------------------------------------------+------------------------------------------+
+| ``application/json``                     | JSON payloads (e.g., face comparison)    |
++------------------------------------------+------------------------------------------+
+| ``multipart/form-data``                  | File uploads (e.g., raw image conversion)|
++------------------------------------------+------------------------------------------+
+
+**HTTP Status Codes**
+
++-------+---------------------------------------------+
+| Code  | Meaning                                     |
++=======+=============================================+
+| 200   | Success                                     |
++-------+---------------------------------------------+
+| 401   | Authentication error                        |
++-------+---------------------------------------------+
+| 422   | Input validation failed                     |
++-------+---------------------------------------------+
+| 500   | Internal server error                       |
++-------+---------------------------------------------+
+
+All requests are authenticated and encrypted over HTTPS. API tokens must be kept confidential.
 
 **Note regarding Image Inputs:**
 All endpoints that accept image data (detect face, compare face, etc.) require the images to be uploaded in **Base64** format. This design ensures consistent handling of image data across various client platforms and network environments, simplifying the JSON payload structure.
+
+.. _error-model:
+
+Error Model
+-----------
+
+Sample validation error (HTTP 422):
+
+.. code-block:: json
+
+    {
+      "detail": [
+        {
+          "loc": ["body", "field_name"],
+          "msg": "Field is required",
+          "type": "value_error.missing"
+        }
+      ]
+    }
 
 ---
 
@@ -43,47 +101,53 @@ Verifies that the API service is operational.
 2. Image to Base64
 ------------------
 
-A utility endpoint to convert an uploaded image file into a base64 string. Use this if your client application needs to convert files before sending them to the analysis endpoints.
+Converts an uploaded image file into a base64 string. Use this if your client application needs to convert files before sending them to the analysis endpoints.
 
 *   **Method:** ``POST``
-*   **Endpoint:** ``<base_url>/image-to-base64/``
+*   **Endpoint:** ``/image-to-base64/``
+*   **Auth:** Required
+*   **Content-Type:** ``multipart/form-data``
 
-**Body Parameters (form-data)**
+**Form Data**
 
-+---------+------+--------------+---------------------------+
-| Key     | Type | Content-Type | Description               |
-+=========+======+==============+===========================+
-| ``image``| File | ``image/jpeg``| The image file to convert.|
-+---------+------+--------------+---------------------------+
++-----------+------+------------+---------------------------+
+| Key       | Type | Required   | Description               |
++===========+======+============+===========================+
+| ``image`` | File | Yes        | Image file to convert.    |
++-----------+------+------------+---------------------------+
 
 **Response (200 OK)**
 
 .. code-block:: json
 
     {
-      "base64_image": "data:image/jpeg;base64,/9j/4AAQS..."
+      "data_url": "data:image/jpeg;base64,/9j/4AAQ...",
+      "content_type": "image/jpeg",
+      "filename": "uploaded_image.jpg"
     }
 
 3. Detect Face
 --------------
 
-Analyzes a base64-encoded image to detect faces and extract specified attributes.
+Detects faces and optional attributes (age range, gender, occlusion, etc.).
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``/detect-face/``
+*   **Auth:** Required
 *   **Content-Type:** ``application/x-www-form-urlencoded``
 
 **Body Parameters**
 
-+------------------+------+------------+-------------------------------------------------------------+
-| Key              | Type | Default    | Description                                                 |
-+==================+======+============+=============================================================+
-| ``base64_image`` | Text | *Required* | The base64 encoded string of the image containing the face. |
-| ``features``     | Text | ``ALL``    | Comma-separated list: ``ALL``, ``AGE_RANGE``, ``EYEGLASSES``, |
-|                  |      |            | ``GENDER``, ``FACE_OCCLUDED``, ``SUNGLASSES``.                |
-+------------------+------+------------+-------------------------------------------------------------+
++------------------+--------+------------+--------------------------------------------------------------------------------------+
+| Key              | Type   | Default    | Description                                                                          |
++==================+========+============+======================================================================================+
+| ``base64_image`` | string | *Required* | Base64 encoded string of the image containing the face.                              |
++------------------+--------+------------+--------------------------------------------------------------------------------------+
+| ``features``     | string | ``ALL``    | Comma-separated list: ``ALL`` | ``AGE_RANGE`` | ``EYEGLASSES`` |                      |
+|                  |        |            | ``GENDER`` | ``FACE_OCCLUDED`` | ``SUNGLASSES``                                       |
++------------------+--------+------------+--------------------------------------------------------------------------------------+
 
-**Response (200 OK)**
+**Response (200 OK — faces found)**
 
 .. code-block:: json
 
@@ -100,6 +164,12 @@ Analyzes a base64-encoded image to detect faces and extract specified attributes
       ]
     }
 
+**Response (200 OK — no faces found)**
+
+.. code-block:: json
+
+    { "result": false, "total_faces": 0, "faces": [] }
+
 4. Analyze Liveness
 -------------------
 
@@ -107,6 +177,7 @@ Analyzes a video file to verify liveness and detecting potential spoofing attemp
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``/api/analyze-liveness``
+*   **Auth:** Not required
 *   **Content-Type:** ``multipart/form-data``
 
 **Body Parameters (form-data)**
@@ -140,21 +211,24 @@ Analyzes a video file to verify liveness and detecting potential spoofing attemp
 5. Compare Face (1:1)
 ---------------------
 
-Performs a 1:1 comparison between two face images to verify identity.
+Compares two face images to verify if they belong to the same person.
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``/compare-face/``
+*   **Auth:** Required
 *   **Content-Type:** ``application/json``
 
 **Query Parameters**
 
-+---------------------+----------+----------------------------------------+
-| Key                 | Value    | Description                            |
-+=====================+==========+========================================+
-| ``threshold``       | ``52.0`` | Similarity threshold for matching.     |
-| ``live_check``      | ``false``| Enable liveness checking (true/false). |
-| ``occlusion_check`` | ``false``| Enable occlusion checking (true/false).|
-+---------------------+----------+----------------------------------------+
++---------------------+-----------+-------------------------------------------------------------------+
+| Key                 | Default   | Description                                                       |
++=====================+===========+===================================================================+
+| ``threshold``       | ``52.0``  | Similarity threshold (float) for matching.                        |
++---------------------+-----------+-------------------------------------------------------------------+
+| ``live_check``      | ``false`` | Optional liveness check (boolean).                                |
++---------------------+-----------+-------------------------------------------------------------------+
+| ``occlusion_check`` | ``false`` | Check for face obstructions (boolean).                            |
++---------------------+-----------+-------------------------------------------------------------------+
 
 **Body (JSON Array)**
 
@@ -165,7 +239,7 @@ Performs a 1:1 comparison between two face images to verify identity.
       "<BASE64_IMAGE_2>"
     ]
 
-**Response (200 OK - Match)**
+**Response (200 OK — match)**
 
 .. code-block:: json
 
@@ -175,6 +249,15 @@ Performs a 1:1 comparison between two face images to verify identity.
       "percentage_match": 99.9
     }
 
+**Response (200 OK — no match)**
+
+.. code-block:: json
+
+    {
+      "verified": false,
+      "percentage_match": 0
+    }
+
 6. Compare Face (1:N)
 ---------------------
 
@@ -182,6 +265,7 @@ Performs a reverse search to find a face match within a pre-ingested database.
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``/api/face-reverse-search``
+*   **Auth:** Not required
 *   **Content-Type:** ``binary``
 
 **Body**
@@ -244,32 +328,33 @@ Ingests an image into the database for future 1:N reverse face searches.
 8. Detect & Crop Document
 -------------------------
 
-Identifies the type of document (e.g., national-id, passport) and returns a cropped version of the image.
+Automatically detects the type of document and returns a cropped image.
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``/type-of-document-crop/``
-*   **Content-Type:** ``application/json``
+*   **Auth:** Required
+*   **Content-Type:** ``application/x-www-form-urlencoded``
 
 **Supported Document Types:**
 
-The API recognizes below document types.
+The API recognises the following document types:
 
-*   ``citizenship``
+*   ``citizenship-front`` / ``citizenship-back``
 *   ``driving-license``
+*   ``passport-front`` / ``passport-back``
 *   ``pan-id``
-*   ``voter-id``
 *   ``disability-id``
-*   ``Passport``
 *   ``national-id``
+*   ``voter-id``
 *   ``foreign-passport``
 
 **Body Parameters**
 
-+------------------+------+---------------------------------------------+
-| Key              | Type | Description                                 |
-+==================+======+=============================================+
-| ``base64_image`` | Text | Base64 encoded string of the document image.|
-+------------------+------+---------------------------------------------+
++------------------+--------+------------+----------------------------------------------+
+| Key              | Type   | Required   | Description                                  |
++==================+========+============+==============================================+
+| ``base64_image`` | string | Yes        | Base64 encoded string of the document image. |
++------------------+--------+------------+----------------------------------------------+
 
 **Response (200 OK)**
 
@@ -278,25 +363,26 @@ The API recognizes below document types.
     {
       "document_type": "national-id-front",
       "score": 0.98,
-      "cropped_image": "data:image/jpeg;base64,/9j/4AAQS..."
+      "cropped_image": "data:image/jpeg;base64,/9j/..."
     }
 
-9. Detect & OCR Document
-------------------------
+9. Analyze Document (OCR)
+-------------------------
 
-Extracts structured text information from supported document types using OCR.
+Performs OCR and structured information extraction from supported document types.
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``/document-extract-information/``
+*   **Auth:** Required
 *   **Content-Type:** ``application/x-www-form-urlencoded``
 
 **Body Parameters**
 
-+------------------+------+---------------------------------------+
-| Key              | Type | Description                           |
-+==================+======+=======================================+
-| ``base64_image`` | Text | Base64 encoded string of the document.|
-+------------------+------+---------------------------------------+
++------------------+--------+------------+-----------------------------------------------+
+| Key              | Type   | Required   | Description                                   |
++==================+========+============+===============================================+
+| ``base64_image`` | string | Yes        | Base64 encoded string of the document image.  |
++------------------+--------+------------+-----------------------------------------------+
 
 **Response (200 OK)**
 
@@ -322,6 +408,7 @@ Analyzes an image to detect potential manipulation or forgery.
 
 *   **Method:** ``POST``
 *   **Endpoint:** ``/api/analyze``
+*   **Auth:** Not required
 *   **Content-Type:** ``multipart/form-data``
 
 **Body Parameters (form-data)**
@@ -378,7 +465,8 @@ Create a JWT token signed with **HMAC SHA256 (HS256)** using your provided **Sec
           "identifier": "9888888888",
           "label": "Jane User",
           "secondary_label": "jane",
-          "callback": "https://your-webhook.com/callback-id"
+          "callback": "https://your-webhook.com/callback-id",
+          "is_sdk": true
         }
 
     *   ``callback``: The URL where the results of the KYC Verification will be sent via webhook.
@@ -610,4 +698,18 @@ Checks the status of the Business Document Detection service.
 
     { "status": "Ok" }
 
+---
+
+Security & Compliance
+---------------------
+
+*   **Transport Security** — All traffic must use HTTPS (TLS 1.2+). Plain HTTP requests are rejected.
+
+*   **Transient Processing** — Face and document data are processed transiently. No images are stored unless explicitly configured for audit logging.
+
+*   **Privacy Compliance** — ThirdFactor.ai is mostly compliant with major privacy frameworks, including:
+
+    *   **GDPR** (General Data Protection Regulation)
+
+*   **Token Confidentiality** — API Bearer tokens must be kept confidential and must never be exposed in client-side code or public repositories.
 
