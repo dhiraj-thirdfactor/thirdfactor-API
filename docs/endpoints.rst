@@ -616,12 +616,42 @@ When the KYC process is completed, the SDK server sends a notification to the ``
 
 *   **Note:** The ``photo``, ``original_photo``, ``userPhoto``, and ``gesture_photo`` fields contain the full **Base64** string of the respective images.
 
-12. KYB - Business Document Detection
+12. Generate KYC URL (SaaS with OCR)
+------------------------------------
+
+This is the **SaaS with OCR** version of the KYC URL generation flow.
+
+Use the **same initialization flow as #11** for generating the JWT token, making the request, and handling **remaining credits** and **error responses**.
+
+For the JWT payload:
+
+*   **If initiating on the web**:
+
+    *   set ``"is_sdk": false``
+    *   include ``"return_url": "https://yourapp.example.com/kyc/complete"``
+
+*   **If initiating via Flutter SDK**:
+
+    *   set ``"is_sdk": true``
+    *   do **not** include ``return_url``
+
+**12.1 Webhook Notification (Full Payload - SaaS with OCR)**
+
+When the KYC process is completed, the server sends a notification to the ``callback`` URL specified in the JWT payload. The SaaS + OCR flow returns a different payload shape (and includes additional OCR results).
+
+*   **Unicode rendering (Nepali)**: Some fields (e.g. ``issue_date``) may be returned in **Nepali/Devanagari Unicode** (sometimes serialized as escapes like ``"\u0968\u0966..."``). Clients should treat the payload as **UTF-8** and render these characters as-is.
+*   **PII**: The example below is **redacted**. Do not store or display raw PII (names, addresses, document numbers, IP addresses, JWTs, signatures) unless required and permitted by your compliance requirements.
+*   **Images (Base64)**: Any image fields are replaced with placeholders like ``<BASE64_IMAGE_REDACTED>`` to indicate they are Base64 strings.
+
+.. literalinclude:: get-kyc-url-saas-with-ocr.json
+   :language: json
+
+13. KYB - Business Document Detection
 -------------------------------------
 
 Set of endpoints for detecting and validating business-related documents.
 
-**12.1 Single Inference**
+**13.1 Single Inference**
 
 Detects business document class in a single uploaded image.
 
@@ -653,7 +683,7 @@ Detects business document class in a single uploaded image.
       "output_path": "/app/media_files/results/image.jpg"
     }
 
-**12.2 Folder Inference**
+**13.2 Folder Inference**
 
 Batch processes images within a specified folder path.
 
@@ -685,7 +715,7 @@ Batch processes images within a specified folder path.
       ]
     }
 
-**12.3 Health Check (KYB)**
+**13.3 Health Check (KYB)**
 
 Checks the status of the Business Document Detection service.
 

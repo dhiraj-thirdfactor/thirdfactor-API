@@ -1,0 +1,552 @@
+{
+    "ocr_image_results": [
+      {
+        "image_index": 0,
+        "page_identifier": "citizenship-front",
+        "page_title": "Citizenship Front Page",
+        "selected_nationality": "nepali",
+        "selected_document_type": "citizenship",
+        "is_front_page": true,
+        "is_photo_page": true,
+        "detected_type": "citizenship",
+        "normalized_document_type": "citizenship",
+        "success": true,
+        "found": true,
+        "is_document_valid": true,
+        "confidence": 0.9538843631744385,
+        "error": null,
+        "forgery_result": {
+  
+        },
+        "forgery_checked": false,
+        "is_forged": false,
+        "forgery_decision": null,
+        "heatmap_image": null,
+        "forgery_error": null,
+        "data": {
+          "detected_type": "citizenship",
+          "id_number": "<string — Devanagari numerals, format: DD-CC-PP-NNNNNNN>",
+          "name": "<string — Devanagari script full name>",
+          "address": "<string — Devanagari script, ward/municipality/district>",
+          "dob": {
+            "year": "<string — unicode>",
+            "month": "<string — unicode>",
+            "day": "<string — unicode>"
+          },
+          "gender": "<string — Devanagari: पुरुष | महिला | अन्य>",
+          "fathers_name": "<string — Devanagari script>",
+          "mothers_name": "<string — Devanagari script>",
+          "place_of_issue": "<string — Devanagari script, district office name>"
+        },
+        "translations": {
+          "en": {
+            "detected_type": "citizenship",
+            "id_number": "<string>",
+            "name": "<string>",
+            "address": "<string>",
+            "gender": "<string>",
+            "fathers_name": "<string>",
+            "mothers_name": "<string>",
+            "place_of_issue": "<string>",
+            "dob": {
+              "year": "2052",
+              "month": "05",
+              "day": "18"
+            }
+          }
+        },
+        "faces": [
+          {
+            "confidence": 0.9996335506439209,
+            "facial_area": {
+              "x_min": 61.21208190917969,
+              "y_min": 239.77182006835938,
+              "x_max": 158.7705535888672,
+              "y_max": 337.3302917480469,
+              "left_eye": [
+                93,
+                274
+              ],
+              "right_eye": [
+                129,
+                276
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "image_index": 1,
+        "page_identifier": "citizenship-back",
+        "page_title": "Citizenship Back Page",
+        "selected_nationality": "nepali",
+        "selected_document_type": "citizenship",
+        "is_front_page": false,
+        "is_photo_page": false,
+        "detected_type": "citizenship-back",
+        "normalized_document_type": "citizenship-back",
+        "success": true,
+        "found": true,
+        "is_document_valid": true,
+        "confidence": 0.9573695659637451,
+        "error": null,
+        "forgery_result": {
+  
+        },
+        "forgery_checked": false,
+        "is_forged": false,
+        "forgery_decision": null,
+        "heatmap_image": null,
+        "forgery_error": null,
+        "data": {
+          "detected_type": "citizenship-back",
+          "id_number": "<string>",
+          "name": "<string>",
+          "address": "<string>",
+          "dob": {
+            "year": "2050",
+            "month": "09",
+            "day": "12"
+          },
+          "gender": "<string>",
+          "issue_date": "<string — unicode>",
+          "issue_date_type": "BS"
+        },
+        "translations": null,
+        "faces": []
+      }
+    ],
+    "ocr_frames": [
+      {
+        "index": 0,
+        "type": "citizenship-front",
+        "title": "Citizenship Front Page",
+        "image": "<image/jpeg>"
+      },
+      {
+        "index": 1,
+        "type": "citizenship-back",
+        "title": "Citizenship Back Page",
+        "image": "<image/jpeg>"
+      }
+    ],
+    "gesture_verification_retries": 1,
+    "expires_at": "2026-04-28T06:15:47.961877+00:00",
+    "gender": "<string>",
+    "ocr_summary": {
+      "document_type": "citizenship",
+      "selected_document_type": "citizenship",
+      "selected_nationality": "nepali",
+      "detected_document_type": "citizenship",
+      "document_type_status": "Matched selected document type",
+      "confidence": 0.9573695659637451,
+      "is_document_valid": true,
+      "found": true,
+      "successful_images": 2,
+      "uploaded_image_count": 2,
+      "front_page_identifier": "citizenship-front",
+      "forgery_detected": false,
+      "forgery_checked_page_count": 0,
+      "forged_page_count": 0,
+      "forgery_decision": null,
+      "page_results": [
+        {
+          "image_index": 0,
+          "page_identifier": "citizenship-front",
+          "page_title": "Citizenship Front Page",
+          "selected_nationality": "nepali",
+          "selected_document_type": "citizenship",
+          "is_front_page": true,
+          "is_photo_page": true,
+          "detected_type": "citizenship",
+          "normalized_document_type": "citizenship",
+          "success": true,
+          "found": true,
+          "is_document_valid": true,
+          "confidence": 0.9538843631744385,
+          "error": null,
+          "forgery_result": {
+  
+          },
+          "forgery_checked": false,
+          "is_forged": false,
+          "forgery_decision": null,
+          "heatmap_image": null,
+          "forgery_error": null,
+          "data": {
+            "detected_type": "citizenship",
+            "id_number": "<string — Devanagari numerals, format: DD-CC-PP-NNNNNNN>",
+            "name": "<string — Devanagari script full name>",
+            "address": "<string — Devanagari script, ward/municipality/district>",
+            "dob": {
+              "year": "<string — unicode>",
+              "month": "<string — unicode>",
+              "day": "<string — unicode>"
+            },
+            "gender": "<string — Devanagari: पुरुष | महिला | अन्य>",
+            "fathers_name": "<string — Devanagari script>",
+            "mothers_name": "<string — Devanagari script>",
+            "place_of_issue": "<string — Devanagari script, district office name>"
+          },
+          "translations": {
+            "en": {
+              "detected_type": "citizenship",
+              "id_number": "<string>",
+              "name": "<string>",
+              "address": "<string>",
+              "gender": "<string>",
+              "fathers_name": "<string>",
+              "mothers_name": "<string>",
+              "place_of_issue": "<string>",
+              "dob": {
+                "year": "2052",
+                "month": "05",
+                "day": "12"
+              }
+            }
+          },
+          "faces": [
+            {
+              "confidence": 0.9996335506439209,
+              "facial_area": {
+                "x_min": 61.21208190917969,
+                "y_min": 239.77182006835938,
+                "x_max": 158.7705535888672,
+                "y_max": 337.3302917480469,
+                "left_eye": [
+                  93,
+                  274
+                ],
+                "right_eye": [
+                  129,
+                  276
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "image_index": 1,
+          "page_identifier": "citizenship-back",
+          "page_title": "Citizenship Back Page",
+          "selected_nationality": "nepali",
+          "selected_document_type": "citizenship",
+          "is_front_page": false,
+          "is_photo_page": false,
+          "detected_type": "citizenship-back",
+          "normalized_document_type": "citizenship-back",
+          "success": true,
+          "found": true,
+          "is_document_valid": true,
+          "confidence": 0.9573695659637451,
+          "error": null,
+          "forgery_result": {
+  
+          },
+          "forgery_checked": false,
+          "is_forged": false,
+          "forgery_decision": null,
+          "heatmap_image": null,
+          "forgery_error": null,
+          "data": {
+            "detected_type": "citizenship-back",
+            "id_number": "<string>",
+            "name": "<string>",
+            "address": "<string>",
+            "dob": {
+              "year": "2050",
+              "month": "09",
+              "day": "12"
+            },
+            "gender": "<string>",
+            "issue_date": "<string — unicode>",
+            "issue_date_type": "BS"
+          },
+          "translations": null,
+          "faces": []
+        }
+      ],
+      "reviewed_document_type": "citizenship",
+      "reviewed_field_count": 5,
+      "face_match_page_identifier": "citizenship-front"
+    },
+    "ocr_extra_fields": {
+      "fathers_name": "<string — Devanagari script>",
+      "mothers_name": "<string — Devanagari script>",
+      "place_of_issue": "<string — Devanagari script, district office name>",
+      "issue_date": "<string — unicode>",
+      "issue_date_type": "BS"
+    },
+    "gesture_photo": "<image/jpeg>",
+    "ocr_data": {
+      "detected_type": "citizenship",
+      "id_number": "<string — Devanagari numerals, format: DD-CC-PP-NNNNNNN>",
+      "name": "<string — Devanagari script full name>",
+      "address": "<string — Devanagari script, ward/municipality/district>",
+      "dob": {
+        "year": "<string — unicode>",
+        "month": "<string — unicode>",
+        "day": "<string — unicode>"
+      },
+      "gender": "<string — Devanagari: पुरुष | महिला | अन्य>",
+      "fathers_name": "<string — Devanagari script>",
+      "mothers_name": "<string — Devanagari script>",
+      "place_of_issue": "<string — Devanagari script, district office name>",
+      "issue_date": "<string — unicode>",
+      "issue_date_type": "BS"
+    },
+    "document_forgery_results": [],
+    "userPhoto": "<image/jpeg>",
+    "documentDetectionLog": [
+      {
+        "created_at": "2026-04-28T05:51:51.450412+00:00",
+        "is_verified": true,
+        "photo": "<image/jpeg>",
+        "original_photo": "<image/jpeg>",
+        "nationality": "nepali",
+        "document_number": "<string — unicode>",
+        "percentage_match": 46.615300000000005,
+        "claimed_doc_type": "citizenship",
+        "detected_doc_type": "citizenship",
+        "reason": "Valid"
+      }
+    ],
+    "session": "<string>",
+    "gesture_challenge": [
+      "Pointing_Up"
+    ],
+    "ocr_review_field_keys": [
+      "id_number",
+      "name",
+      "address",
+      "dob",
+      "gender"
+    ],
+    "completed_at": "2026-04-28T05:51:56.347779+00:00",
+    "document_forgery_summary": {
+  
+    },
+    "percentage_match": 46.615300000000005,
+    "ocr_primary_image": "<image/jpeg>",
+    "ocr_review_fields_display": [
+      {
+        "key": "id_number",
+        "label": "<string>",
+        "value": "<string — unicode>"
+      },
+      {
+        "key": "name",
+        "label": "<string>",
+        "value": "<string — unicode>"
+      },
+      {
+        "key": "address",
+        "label": "<string>",
+        "value": "<string — unicode>"
+      },
+      {
+        "key": "dob",
+        "label": "<string>",
+        "value": "<string — unicode>"
+      },
+      {
+        "key": "gender",
+        "label": "<string>",
+        "value": "<string — unicode>"
+      }
+    ],
+    "documentPhoto": [
+      {
+        "created_at": "2026-04-28T05:51:51.450412+00:00",
+        "is_verified": true,
+        "photo": "<image/jpeg>",
+        "original_photo": "<image/jpeg>",
+        "nationality": "nepali",
+        "document_number": "<string — unicode>",
+        "percentage_match": 46.615300000000005,
+        "claimed_doc_type": "citizenship",
+        "detected_doc_type": "citizenship",
+        "reason": "Valid"
+      }
+    ],
+    "document_number": "<string — unicode>",
+    "in_progress": 0,
+    "ocr_extra_fields_display": [
+      {
+        "key": "fathers_name",
+        "label": "<string>",
+        "value": "<string — unicode>"
+      },
+      {
+        "key": "mothers_name",
+        "label": "<string>",
+        "value": "<string — unicode>"
+      },
+      {
+        "key": "place_of_issue",
+        "label": "<string>",
+        "value": "<string — unicode>"
+      },
+      {
+        "key": "issue_date",
+        "label": "<string>",
+        "value": "<string — unicode>"
+      },
+      {
+        "key": "issue_date_type",
+        "label": "<string>",
+        "value": "BS"
+      }
+    ],
+    "ocr_reviewed_fields": {
+      "id_number": "<string — Devanagari numerals, format: DD-CC-PP-NNNNNNN>",
+      "name": "<string — Devanagari script full name>",
+      "address": "<string — Devanagari script, ward/municipality/district>",
+      "dob": "<string — Devanagari numerals, BS date YYYY-MM-DD>",
+      "gender": "<string — Devanagari: पुरुष | महिला | अन्य>"
+    },
+    "gestureSuccess": true,
+    "ocr_document_type": "citizenship",
+    "age": 32,
+    "ocr_raw_results": [
+      {
+        "success": true,
+        "found": true,
+        "detected_type": "citizenship",
+        "data": {
+          "detected_type": "citizenship",
+          "id_number": "<string — Devanagari numerals, format: DD-CC-PP-NNNNNNN>",
+          "name": "<string — Devanagari script full name>",
+          "address": "<string — Devanagari script, ward/municipality/district>",
+          "dob": {
+            "year": "<string — unicode>",
+            "month": "<string — unicode>",
+            "day": "<string — unicode>"
+          },
+          "gender": "<string — Devanagari: पुरुष | महिला | अन्य>",
+          "fathers_name": "<string — Devanagari script>",
+          "mothers_name": "<string — Devanagari script>",
+          "place_of_issue": "<string — Devanagari script, district office name>"
+        },
+        "translations": {
+          "en": {
+            "detected_type": "citizenship",
+            "id_number": "<string>",
+            "name": "<string>",
+            "address": "<string>",
+            "gender": "<string>",
+            "fathers_name": "<string>",
+            "mothers_name": "<string>",
+            "place_of_issue": "<string>",
+            "dob": {
+              "year": "2052",
+              "month": "05",
+              "day": "18"
+            }
+          }
+        },
+        "is_document_valid": true,
+        "confidence": 0.9538843631744385,
+        "error": null,
+        "faces": [
+          {
+            "confidence": 0.9996335506439209,
+            "facial_area": {
+              "x_min": 61.21208190917969,
+              "y_min": 239.77182006835938,
+              "x_max": 158.7705535888672,
+              "y_max": 337.3302917480469,
+              "left_eye": [
+                93,
+                274
+              ],
+              "right_eye": [
+                129,
+                276
+              ]
+            }
+          }
+        ],
+        "page_identifier": "citizenship-front",
+        "page_title": "Citizenship Front Page",
+        "selected_nationality": "nepali",
+        "selected_document_type": "citizenship",
+        "is_front_page": true,
+        "is_photo_page": true
+      },
+      {
+        "success": true,
+        "found": true,
+        "detected_type": "citizenship-back",
+        "data": {
+          "detected_type": "citizenship-back",
+          "id_number": "<string>",
+          "name": "<string>",
+          "address": "<string>",
+          "dob": {
+            "year": "2050",
+            "month": "09",
+            "day": "12"
+          },
+          "gender": "<string>",
+          "issue_date": "<string — unicode>",
+          "issue_date_type": "BS"
+        },
+        "translations": null,
+        "is_document_valid": true,
+        "confidence": 0.9573695659637451,
+        "error": null,
+        "faces": [],
+        "page_identifier": "citizenship-back",
+        "page_title": "Citizenship Back Page",
+        "selected_nationality": "nepali",
+        "selected_document_type": "citizenship",
+        "is_front_page": false,
+        "is_photo_page": false
+      }
+    ],
+    "faceDetectionSuccess": true,
+    "faceDetectionLog": [
+      {
+        "created_at": "2026-04-28 05:50:57.985303+00:00",
+        "is_verified": true,
+        "age": 32,
+        "gender": "<string>",
+        "photo": "<image/jpeg>",
+        "reason": "Face Attributes Clearly Visible."
+      }
+    ],
+    "ocr_face_match_page_identifier": "citizenship-front",
+    "documentDetectionSuccess": true,
+    "face_detection_retries": 1,
+    "_access_session_id": 16,
+    "ocr_document_face_image": "<string>",
+    "nationality": "nepali",
+    "ocr_selected_nationality": "nepali",
+    "document_upload_with_ocr_retries": 1,
+    "ocr_detected_document_type": "citizenship",
+    "ocr_selected_document_type": "citizenship",
+    "gestureDetectionLog": [
+      {
+        "created_at": "2026-04-28 05:51:13.332434+00:00",
+        "is_verified": true,
+        "challenged_gesture": "Pointing_Up",
+        "detected_gesture": "Pointing_Up",
+        "percentage_match": 82.0312,
+        "photo": "<image/jpeg>",
+        "reason": "Valid",
+        "is_passive_live": true,
+        "passive_score": 99.92410242557526
+      }
+    ],
+    "ocr_face_match_image": "<image/jpeg>",
+    "started_at": "2026-04-28T05:50:47.961877+00:00",
+    "client_ip": "157.119.70.92",
+    "label": "<string>",
+    "secondary_label": "<string>",
+    "identifier": "<string>",
+    "jwt": "<string>",
+    "is_verified": true,
+    "forced_next": false,
+    "signature": "<string>"
+  }
